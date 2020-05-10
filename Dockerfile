@@ -1,13 +1,16 @@
-FROM alpine:3.10
+FROM alpine:3.11
 
 # Install packages
-RUN apk --no-cache add php7 php7-fpm php7-mysqli php7-json php7-openssl php7-curl \
-    php7-zlib php7-xml php7-phar php7-intl php7-dom php7-xmlreader php7-ctype php7-session \
-    php7-mbstring php7-gd nginx supervisor curl bash tzdata
+RUN apk --no-cache add php7 php7-fpm php7-mysqli php7-json php7-openssl php7-curl php7-gd php7-gettext php7-zip php7-json \
+    php7-zlib php7-xml php7-phar php7-intl php7-dom php7-xmlreader php7-ctype php7-session php7-mbstring php7-tokenizer \
+    nginx supervisor curl bash tzdata
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 # Set timezone
-RUN cp /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime \
-	&& echo "America/Sao_Paulo" >  /etc/timezone \
+RUN cp /usr/share/zoneinfo/America/Campo_Grande /etc/localtime \
+	&& echo "America/Campo_Grande" >  /etc/timezone \
 	&& apk del tzdata
 
 # Configure nginx
@@ -29,7 +32,6 @@ RUN mkdir -p /var/www/html
 RUN chown -R nobody.nobody /var/www/html && \
   chown -R nobody.nobody /run && \
   chown -R nobody.nobody /var/lib/nginx && \
-  chown -R nobody.nobody /var/tmp/nginx && \
   chown -R nobody.nobody /var/log/nginx
 
 # Make the document root a volume
@@ -38,9 +40,8 @@ VOLUME /var/www/html
 # Switch to use a non-root user from here on
 USER nobody
 
-# Add application
+# Dir application
 WORKDIR /var/www/html
-COPY --chown=nobody src/ /var/www/html/
 
 # Expose the port nginx is reachable on
 EXPOSE 8080
