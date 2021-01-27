@@ -3,7 +3,9 @@ FROM alpine:3.11
 # Install packages
 RUN apk --no-cache add php7 php7-fpm php7-mysqli php7-pdo_mysql php7-sqlite3 php7-pdo_sqlite php7-json php7-openssl php7-curl php7-gd php7-gettext php7-zip php7-json \
     php7-zlib php7-phar php7-intl php7-dom php7-xml php7-simplexml php7-ctype php7-session php7-mbstring php7-tokenizer php-xmlwriter php7-iconv \
-    nginx supervisor curl bash tzdata git
+    nginx supervisor curl bash tzdata git gnu-libiconv
+
+ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
